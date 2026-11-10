@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { TEMPLATES } from '../data/templates'
 import { Icon } from '../components/Icon'
+import { ClampText } from '../components/ClampText'
 import { Sheet } from '../components/Sheet'
 import { EmptyState } from '../components/EmptyState'
 import { PageHeader } from '../components/PageHeader'
@@ -21,11 +22,7 @@ export function Plans() {
 
   return (
     <div className="app">
-      <PageHeader
-        eyebrow="Programming"
-        title="Plans"
-        sub="Build training splits the evidence-based way — 2× weekly frequency, smart volume, and rep targets baked in."
-      />
+      <PageHeader title="Plans" />
 
       <div className="row" style={{ gap: 10, marginBottom: 4 }}>
         <button
@@ -58,51 +55,39 @@ export function Plans() {
         </EmptyState>
       ) : (
         plans.map((p) => (
-          <div className="card" key={p.id}>
-            <div className="row-between">
-              <button
-                className="grow"
-                style={{ textAlign: 'left', background: 'none' }}
-                onClick={() => nav(`/plans/${p.id}`)}
-              >
-                <div style={{ fontWeight: 640, fontSize: 17 }}>{p.name}</div>
-                <div className="faint" style={{ fontSize: 13 }}>
+          <div className="card plan-card" key={p.id}>
+            <button className="plan-card-head" onClick={() => nav(`/plans/${p.id}`)}>
+              <div className="grow">
+                <div className="plan-card-title">{p.name}</div>
+                <div className="plan-card-meta">
                   {p.days.length} day{p.days.length === 1 ? '' : 's'} · {p.daysPerWeek}×/week ·{' '}
                   {p.days.reduce((t, d) => t + d.exercises.length, 0)} exercises
                 </div>
-              </button>
-              <button
-                className="icon-btn"
-                onClick={() => {
-                  duplicate(p.id)
-                  toast('Plan duplicated', 'success')
-                }}
-                aria-label="Duplicate plan"
-              >
-                <Icon name="copy" size={16} />
-              </button>
-              <button
-                className="icon-btn"
-                onClick={() => nav(`/plans/${p.id}`)}
-                aria-label="Edit plan"
-              >
-                <Icon name="edit" size={16} />
-              </button>
-              <button
-                className="icon-btn"
-                onClick={() => setConfirmDelete({ id: p.id, name: p.name })}
-                aria-label="Delete plan"
-              >
-                <Icon name="trash" size={16} />
-              </button>
-            </div>
-            {p.description && (
-              <p className="hint" style={{ marginBottom: 0, marginTop: 10 }}>
-                {p.description}
-              </p>
-            )}
-            <div style={{ marginTop: 10 }}>
-              <SharePlanButton plan={p} className="btn btn-ghost btn-sm btn-block" label="Share with a friend" />
+              </div>
+              <Icon name="chevron" size={16} className="group-row-chev" />
+            </button>
+            {p.description && <ClampText text={p.description} className="hint" lines={3} />}
+            <div className="plan-card-foot">
+              <SharePlanButton plan={p} className="btn btn-ghost btn-sm" label="Share" />
+              <div className="row" style={{ gap: 6 }}>
+                <button
+                  className="icon-btn icon-btn-sm"
+                  onClick={() => {
+                    duplicate(p.id)
+                    toast('Plan duplicated', 'success')
+                  }}
+                  aria-label="Duplicate plan"
+                >
+                  <Icon name="copy" size={15} />
+                </button>
+                <button
+                  className="icon-btn icon-btn-sm"
+                  onClick={() => setConfirmDelete({ id: p.id, name: p.name })}
+                  aria-label="Delete plan"
+                >
+                  <Icon name="trash" size={15} />
+                </button>
+              </div>
             </div>
           </div>
         ))

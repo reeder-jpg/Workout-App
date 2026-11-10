@@ -86,9 +86,7 @@ export function Library() {
   return (
     <div className="app">
       <PageHeader
-        eyebrow="Knowledge"
         title="Library"
-        sub={`${all.length} exercises with evidence-based selection notes, plus core training principles.`}
         actions={
           <button className="icon-btn" onClick={() => nav('/settings')} aria-label="Settings">
             <Icon name="settings" size={18} />
@@ -97,7 +95,7 @@ export function Library() {
       />
 
       <input
-        placeholder="Search exercises…"
+        placeholder={`Search ${all.length} exercises`}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         style={{ marginBottom: 10 }}

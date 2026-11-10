@@ -36,3 +36,16 @@ export function fmtDuration(sec?: number): string {
   if (m < 60) return `${m}m`
   return `${Math.floor(m / 60)}h ${m % 60}m`
 }
+
+/**
+ * Session names are stored as "Plan name · Day name". Screens lead with the
+ * day (what you trained) and show the plan as context. Names without the
+ * separator (empty workouts, imports) come back whole as the title.
+ */
+export function splitSessionName(name: string): { title: string; context?: string } {
+  const i = name.indexOf(' · ')
+  if (i <= 0) return { title: name }
+  const context = name.slice(0, i).trim()
+  const title = name.slice(i + 3).trim()
+  return title ? { title, context: context || undefined } : { title: name }
+}

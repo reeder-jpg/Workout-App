@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore'
 import { EXERCISE_BY_ID } from '../data/exercises'
 import { Icon } from '../components/Icon'
+import { splitSessionName } from '../lib/format'
 import { ExercisePicker } from '../components/ExercisePicker'
 import { RestTimer } from '../components/RestTimer'
 import { Sheet } from '../components/Sheet'
@@ -174,7 +175,8 @@ export function Session() {
   return (
     <div className="app">
       <PageHeader
-        title={active.name}
+        eyebrow={splitSessionName(active.name).context}
+        title={splitSessionName(active.name).title}
         sub={
           <>
             <Icon name="timer" size={12} /> {elapsed} · {totals.done} of {totals.total} sets

@@ -45,20 +45,26 @@ export function PageHeader({ title, eyebrow, sub, actions, onBack }: Props) {
       </div>
 
       <div className="page-head">
-        {(onBack || actions) && (
+        {/* With a back button, actions share its row like a navigation bar.
+            Top-level screens have no back button, so their actions sit beside
+            the large title instead of floating on a row of their own. */}
+        {onBack && (
           <div className="row-between page-head-top">
-            {onBack ? (
-              <button className="icon-btn" onClick={onBack} aria-label="Back">
-                <Icon name="back" size={18} />
-              </button>
-            ) : (
-              <span />
-            )}
+            <button className="icon-btn" onClick={onBack} aria-label="Back">
+              <Icon name="back" size={18} />
+            </button>
             {actions && <div className="row">{actions}</div>}
           </div>
         )}
         {eyebrow && <div className="eyebrow">{eyebrow}</div>}
-        <h1 className="page-title">{title}</h1>
+        {!onBack && actions ? (
+          <div className="page-title-row">
+            <h1 className="page-title">{title}</h1>
+            <div className="row page-title-actions">{actions}</div>
+          </div>
+        ) : (
+          <h1 className="page-title">{title}</h1>
+        )}
         {sub && <p className="page-sub">{sub}</p>}
       </div>
       <div ref={sentinel} className="head-sentinel" aria-hidden="true" />

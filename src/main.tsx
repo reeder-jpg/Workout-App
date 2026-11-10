@@ -9,6 +9,7 @@ import { isConfigured } from './lib/supabase'
 import { initAuth } from './lib/auth'
 import { takeAuthCallback } from './lib/authCallback'
 import './index.css'
+import './styles/glass.css'
 
 // Point the social layer at the backend before the first render, so screens
 // don't briefly show their "not connected" state.

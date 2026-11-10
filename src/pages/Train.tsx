@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { EXERCISE_BY_ID } from '../data/exercises'
 import { summaryStats, sessionVolume } from '../lib/stats'
-import { relativeDate, fmtDuration, fmtNum } from '../lib/format'
+import { relativeDate, fmtDuration, fmtNum, splitSessionName } from '../lib/format'
 import { Icon } from '../components/Icon'
 import { Sheet } from '../components/Sheet'
 import { ProgressRing } from '../components/ProgressRing'
@@ -70,6 +70,11 @@ export function Train() {
 
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  })
 
   // Weekly target comes from the plan itself rather than a hardcoded number.
   const weekTarget = plans.length ? Math.max(...plans.map((p) => p.daysPerWeek)) : 4
@@ -81,8 +86,8 @@ export function Train() {
 
   return (
     <div className="app">
-      <div className="eyebrow">{greeting}</div>
-      <h1 className="page-title">{settings.name ? `Let's train, ${settings.name}.` : "Let's train."}</h1>
+      <div className="eyebrow">{today}</div>
+      <h1 className="page-title">{settings.name ? `${greeting}, ${settings.name}` : greeting}</h1>
       <p className="page-sub">
         {stats.totalSessions === 0
           ? 'Log your first workout to start building your history.'
@@ -112,7 +117,7 @@ export function Train() {
             />
             <div className="hero-copy">
               <div className="eyebrow accent">In progress</div>
-              <div className="hero-title truncate">{active.name}</div>
+              <div className="hero-title truncate">{splitSessionName(active.name).title}</div>
               <div className="hero-sub">{active.exercises.length} exercises · tap to resume</div>
             </div>
             <Icon name="play" className="accent" size={26} />
@@ -222,37 +227,22 @@ export function Train() {
           </button>
         </EmptyState>
       ) : (
-        plans.map((p) => (
-          <div className="card" key={p.id}>
-            <div className="row-between">
-              <button
-                className="grow"
-                style={{ textAlign: 'left', background: 'none' }}
-                onClick={() => setPickDayFor(p)}
-              >
-                <div style={{ fontWeight: 640, fontSize: 16 }}>{p.name}</div>
-                <div className="faint" style={{ fontSize: 13 }}>
-                  {p.days.length} day{p.days.length === 1 ? '' : 's'} · {p.daysPerWeek}×/week ·
-                  tap to start
+        <div className="group">
+          {plans.map((p) => (
+            <button key={p.id} className="group-row" onClick={() => setPickDayFor(p)}>
+              <span className="group-row-icon" aria-hidden="true">
+                <Icon name="clipboard" size={18} />
+              </span>
+              <div className="group-row-main">
+                <div className="group-row-title truncate">{p.name}</div>
+                <div className="group-row-meta">
+                  {p.days.length} day{p.days.length === 1 ? '' : 's'} · {p.daysPerWeek}×/week
                 </div>
-              </button>
-              <button
-                className="icon-btn"
-                onClick={() => nav(`/plans/${p.id}`)}
-                aria-label="Edit plan"
-              >
-                <Icon name="edit" size={16} />
-              </button>
-              <button
-                className="icon-btn"
-                onClick={() => setConfirmDelete({ id: p.id, name: p.name })}
-                aria-label="Delete plan"
-              >
-                <Icon name="trash" size={16} />
-              </button>
-            </div>
-          </div>
-        ))
+              </div>
+              <Icon name="chevron" size={16} className="group-row-chev" />
+            </button>
+          ))}
+        </div>
       )}
 
       <button
@@ -271,46 +261,41 @@ export function Train() {
               View all <Icon name="chevron" size={14} />
             </button>
           </div>
-          {sessions.slice(0, 5).map((s) => (
-            <button
-              key={s.id}
-              className="card card-tap"
-              style={{
-                padding: '14px 16px',
-                width: '100%',
-                textAlign: 'left',
-                display: 'block',
-              }}
-              onClick={() => nav('/progress', { state: { openSession: s.id } })}
-            >
-              <div className="row-between">
-                <div className="grow">
-                  <div style={{ fontWeight: 600 }} className="truncate">
-                    {s.name}
-                  </div>
-                  {/* Which lifts, not just how many — the day name alone doesn't
-                      say what was actually trained. */}
-                  {s.exercises.length > 0 && (
-                    <div className="truncate" style={{ fontSize: 12, marginTop: 2 }}>
-                      {s.exercises
-                        .slice(0, 3)
-                        .map((e) => EXERCISE_BY_ID[e.exerciseId]?.name ?? 'Exercise')
-                        .join(' · ')}
-                      {s.exercises.length > 3 ? ` +${s.exercises.length - 3} more` : ''}
+          <div className="group">
+            {sessions.slice(0, 5).map((s) => {
+              const n = splitSessionName(s.name)
+              return (
+                <button
+                  key={s.id}
+                  className="group-row"
+                  onClick={() => nav('/progress', { state: { openSession: s.id } })}
+                >
+                  <div className="group-row-main">
+                    <div className="group-row-title truncate">{n.title}</div>
+                    {/* Which lifts, not just how many — the day name alone doesn't
+                        say what was actually trained. */}
+                    {s.exercises.length > 0 && (
+                      <div className="group-row-sub truncate">
+                        {s.exercises
+                          .slice(0, 3)
+                          .map((e) => EXERCISE_BY_ID[e.exerciseId]?.name ?? 'Exercise')
+                          .join(' · ')}
+                        {s.exercises.length > 3 ? ` +${s.exercises.length - 3} more` : ''}
+                      </div>
+                    )}
+                    <div className="group-row-meta">
+                      {relativeDate(s.date)} · {s.exercises.length} exercises ·{' '}
+                      {fmtDuration(s.durationSec)}
                     </div>
-                  )}
-                  <div className="faint" style={{ fontSize: 12, marginTop: 2 }}>
-                    {relativeDate(s.date)} · {s.exercises.length} exercises ·{' '}
-                    {fmtDuration(s.durationSec)}
                   </div>
-                </div>
-                <div className="mono muted" style={{ fontSize: 13, textAlign: 'right' }}>
-                  {fmtNum(sessionVolume(s))}
-                  <div className="tag">{settings.unit} vol</div>
-                </div>
-              </div>
-            </button>
-          ))}
+                  <div className="group-row-trail">
+                    <div className="group-row-value">{fmtNum(sessionVolume(s))}</div>
+                    <div className="group-row-unit">{settings.unit} vol</div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
         </>
       )}
 

@@ -1,0 +1,905 @@
+/* ============================================================================
+   Glass theme — translucent frosted surfaces over a soft colour field.
+   Loaded after tokens.css and index.css, so it only re-skins: no layout,
+   markup or behaviour depends on it. Delete the import to revert.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- tokens */
+:root {
+  /* SF Pro on Apple devices; the system UI face everywhere else */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --radius-sm: 12px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-2xl: 28px;
+  --radius-3xl: 34px;
+
+  --glass-blur: blur(28px) saturate(185%);
+  --glass-blur-strong: blur(40px) saturate(200%);
+
+  /* Floating pill tab bar: 62px bar + gap below + breathing room above */
+  --tabbar-h: 84px;
+
+  --ease-spring: cubic-bezier(0.32, 1.32, 0.56, 1);
+}
+
+:root,
+:root[data-theme='light'] {
+  --surface-canvas: #eef1f7;
+  --surface-1: rgba(255, 255, 255, 0.58);
+  --surface-2: rgba(255, 255, 255, 0.55);
+  --surface-3: rgba(255, 255, 255, 0.8);
+
+  --ink-primary: #0b0d12;
+  --ink-secondary: #4a5260;
+  --ink-tertiary: #6b7380;
+
+  --border-subtle: rgba(15, 23, 42, 0.06);
+  --border-default: rgba(15, 23, 42, 0.09);
+
+  /* iOS system blue */
+  --accent: #007aff;
+  --accent-hover: #0a6fe6;
+  --accent-pressed: #0062cc;
+  --accent-subtle: rgba(0, 122, 255, 0.1);
+  --accent-subtle-2: rgba(0, 122, 255, 0.18);
+  --accent-on: #ffffff;
+  --accent-ink: #0060d1;
+  --accent-ring: rgba(0, 122, 255, 0.22);
+
+  --success: #1f9d4c;
+  --success-subtle: rgba(52, 199, 89, 0.14);
+  --warning: #b36b00;
+  --warning-subtle: rgba(255, 159, 10, 0.16);
+  --danger: #e5352b;
+  --danger-subtle: rgba(255, 59, 48, 0.12);
+
+  --glass-edge: rgba(255, 255, 255, 0.85);
+  --glass-rim: rgba(15, 23, 42, 0.06);
+  --glass-shine: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.12) 38%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  --card-border: var(--glass-rim);
+  --card-shadow: inset 0 1px 0 var(--glass-edge), 0 1px 2px rgba(20, 30, 60, 0.04),
+    0 10px 30px -12px rgba(20, 30, 60, 0.18);
+  --elev-3: inset 0 1px 0 var(--glass-edge), 0 18px 40px -16px rgba(20, 30, 60, 0.28);
+  --elev-4: inset 0 1px 0 var(--glass-edge), 0 -20px 50px -16px rgba(20, 30, 60, 0.28);
+
+  --tabbar-bg: rgba(255, 255, 255, 0.72);
+  --tab-inactive: #5f6773;
+  --segmented-thumb: rgba(255, 255, 255, 0.95);
+  --chart-surface: transparent;
+  --chart-grid: rgba(15, 23, 42, 0.07);
+
+  --field-a: #c9dcff;
+  --field-b: #ffd8ec;
+  --field-c: #c8f1ea;
+  --field-d: #e6dcff;
+}
+
+:root[data-theme='dark'] {
+  --surface-canvas: #05070c;
+  --surface-1: rgba(255, 255, 255, 0.075);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --surface-3: rgba(255, 255, 255, 0.14);
+
+  --ink-primary: #f5f7fb;
+  --ink-secondary: #aab2bf;
+  --ink-tertiary: #858d99;
+
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-default: rgba(255, 255, 255, 0.1);
+
+  --accent: #0a84ff;
+  --accent-hover: #3396ff;
+  --accent-pressed: #0070e0;
+  --accent-subtle: rgba(10, 132, 255, 0.16);
+  --accent-subtle-2: rgba(10, 132, 255, 0.26);
+  --accent-on: #ffffff;
+  --accent-ink: #64b0ff;
+  --accent-ring: rgba(10, 132, 255, 0.35);
+
+  --success: #30d158;
+  --success-subtle: rgba(48, 209, 88, 0.15);
+  --warning: #ffd60a;
+  --warning-subtle: rgba(255, 214, 10, 0.13);
+  --danger: #ff453a;
+  --danger-subtle: rgba(255, 69, 58, 0.15);
+
+  --glass-edge: rgba(255, 255, 255, 0.14);
+  --glass-rim: rgba(255, 255, 255, 0.09);
+  --glass-shine: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  --card-border: var(--glass-rim);
+  --card-shadow: inset 0 1px 0 var(--glass-edge), 0 14px 36px -14px rgba(0, 0, 0, 0.7);
+  --elev-3: inset 0 1px 0 var(--glass-edge), 0 18px 44px -14px rgba(0, 0, 0, 0.75);
+  --elev-4: inset 0 1px 0 var(--glass-edge), 0 -24px 56px -14px rgba(0, 0, 0, 0.8);
+
+  --tabbar-bg: rgba(30, 32, 40, 0.68);
+  --tab-inactive: #9aa2ae;
+  --segmented-thumb: rgba(255, 255, 255, 0.18);
+  --chart-surface: transparent;
+  --chart-grid: rgba(255, 255, 255, 0.07);
+
+  --field-a: #1b3d8f;
+  --field-b: #5a1e5c;
+  --field-c: #0f4f52;
+  --field-d: #2f2370;
+}
+
+/* ---------------------------------------------------------------- canvas */
+html {
+  background: var(--surface-canvas);
+}
+/* Transparent body: with html carrying the canvas colour, a body background
+   would paint over the negative-z colour field below. */
+body {
+  background: transparent;
+  letter-spacing: -0.011em;
+}
+
+/* Fixed colour field the glass blurs. Fixed + its own layer, so scrolling
+   never repaints it. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20vmax;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38vmax 38vmax at 12% 8%, var(--field-a), transparent 70%),
+    radial-gradient(34vmax 34vmax at 92% 22%, var(--field-b), transparent 70%),
+    radial-gradient(40vmax 40vmax at 78% 88%, var(--field-c), transparent 70%),
+    radial-gradient(36vmax 36vmax at 8% 78%, var(--field-d), transparent 70%),
+    var(--surface-canvas);
+  transform: translateZ(0);
+  animation: glass-drift 40s ease-in-out infinite alternate;
+}
+:root[data-theme='dark'] body::before {
+  opacity: 0.85;
+}
+
+@keyframes glass-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3vmax, -2vmax, 0) scale(1.05);
+  }
+  100% {
+    transform: translate3d(-2vmax, 3vmax, 0) scale(1.02);
+  }
+}
+
+/* ---------------------------------------------------------------- glass surfaces */
+.card,
+.hero,
+.stat,
+.wkcal,
+.block-strip,
+.timer-inner {
+  position: relative;
+  background-color: var(--surface-1);
+  background-image: var(--glass-shine);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+.card {
+  border-radius: var(--radius-xl);
+}
+.hero {
+  border-radius: var(--radius-2xl);
+  padding: var(--space-5);
+}
+.stat {
+  border-radius: var(--radius-lg);
+}
+.ss-card {
+  box-shadow: var(--card-shadow), inset 3px 0 0 var(--accent);
+}
+
+.timer-inner,
+:root[data-theme='dark'] .timer-inner {
+  background-color: var(--tabbar-bg);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  border-radius: var(--radius-full);
+  border-color: var(--card-border);
+  box-shadow: var(--elev-3);
+}
+
+.sheet {
+  background-color: var(--tabbar-bg);
+  background-image: var(--glass-shine);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--card-border);
+  border-bottom: none;
+}
+:root[data-theme='light'] .sheet,
+:root:not([data-theme]) .sheet {
+  background-color: rgba(248, 250, 255, 0.82);
+}
+:root[data-theme='dark'] .sheet {
+  background-color: rgba(22, 24, 32, 0.78);
+}
+
+.notice {
+  border-radius: var(--radius-lg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* ---------------------------------------------------------------- tab bar: floating pill */
+.tabbar {
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: max(12px, calc(env(safe-area-inset-bottom) - 8px));
+  height: 62px;
+  padding: 5px;
+  gap: 2px;
+  border-radius: var(--radius-full);
+  background: var(--tabbar-bg);
+  background-image: var(--glass-shine);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--elev-3);
+}
+@media (min-width: 672px) {
+  .tabbar {
+    left: 0;
+    right: 0;
+    width: calc(var(--maxw) - 32px);
+  }
+}
+.tab {
+  min-height: 0;
+  gap: 2px;
+  border-radius: var(--radius-full);
+  font-size: 10.5px;
+  letter-spacing: 0;
+  transition:
+    background-color var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard);
+}
+.tab.active {
+  color: var(--accent-ink);
+  background: var(--accent-subtle);
+}
+.tab-icon {
+  font-size: 22px;
+}
+.tab:active .tab-icon {
+  transform: scale(0.88);
+  transition-timing-function: var(--ease-spring);
+}
+
+/* Blurred header that slides in on scroll */
+.compact-bar {
+  background: var(--tabbar-bg);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  backdrop-filter: var(--glass-blur-strong);
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Session footer: fade into the colour field instead of a solid band */
+.actionbar {
+  background: none;
+}
+
+/* ---------------------------------------------------------------- typography */
+.page-title {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 40px;
+  font-weight: 700;
+  letter-spacing: -0.028em;
+}
+.hero-title,
+.empty-title,
+.sheet-title {
+  font-family: var(--font-display);
+  letter-spacing: -0.022em;
+}
+
+/* Sentence-case section labels instead of shouted small caps */
+.section-head h2,
+.eyebrow {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 650;
+  color: var(--ink-primary);
+}
+.eyebrow {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+.pill {
+  letter-spacing: 0;
+}
+
+/* Numbers line up in columns */
+.stat-value,
+.hero-metric-value,
+.timer-time,
+.ring-value,
+.setgrid input,
+.knee-reading-value,
+.sym-pct,
+.vol-count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- controls */
+.btn {
+  border-radius: var(--radius-full);
+  min-height: 46px;
+  padding: 12px 20px;
+  background-color: var(--surface-2);
+  background-image: var(--glass-shine);
+  border: 1px solid var(--card-border);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  transition:
+    transform var(--dur-base) var(--ease-spring),
+    background-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+}
+.btn:active {
+  transform: scale(0.96);
+}
+.btn-primary {
+  background-color: var(--accent);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(0, 0, 0, 0.04) 100%
+  );
+  color: var(--accent-on);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 8px 22px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.btn-sm {
+  min-height: 36px;
+  padding: 7px 14px;
+}
+
+.icon-btn {
+  border-radius: var(--radius-full);
+  background-color: var(--surface-2);
+  background-image: var(--glass-shine);
+  border: 1px solid var(--card-border);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  transition: transform var(--dur-base) var(--ease-spring);
+}
+.icon-btn:active {
+  transform: scale(0.9);
+}
+.icon-btn-bare {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.chip {
+  background-color: var(--surface-2);
+  border: 1px solid var(--card-border);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+.segmented {
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  border: 1px solid var(--card-border);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.segmented-thumb {
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 1px 0 var(--glass-edge), 0 3px 10px -2px rgba(0, 0, 0, 0.18);
+  transition: transform var(--dur-slow) var(--ease-spring);
+}
+
+input,
+textarea,
+select {
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--card-border);
+}
+:root[data-theme='light'] input,
+:root[data-theme='light'] textarea,
+:root[data-theme='light'] select {
+  background: rgba(255, 255, 255, 0.7);
+}
+/* Inputs inside a glass card sit a step darker so they read as wells */
+.card input,
+.card textarea,
+.card select {
+  background: rgba(120, 130, 150, 0.12);
+  box-shadow: none;
+}
+:root[data-theme='dark'] .card input,
+:root[data-theme='dark'] .card textarea,
+:root[data-theme='dark'] .card select {
+  background: rgba(255, 255, 255, 0.07);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow:
+    inset 0 0 0 1.5px var(--accent),
+    0 0 0 4px var(--accent-ring);
+}
+
+.toast {
+  background: var(--tabbar-bg);
+  color: var(--ink-primary);
+  border: 1px solid var(--card-border);
+  -webkit-backdrop-filter: var(--glass-blur-strong);
+  backdrop-filter: var(--glass-blur-strong);
+}
+
+/* ---------------------------------------------------------------- page header */
+.page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.page-title-row .page-title {
+  margin: 0;
+}
+.page-title-actions {
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+.page-head .eyebrow {
+  margin-top: var(--space-2);
+}
+/* Consistent gap under every header, with or without a subtitle (the base
+   sentinel's negative margin assumed a subtitle was always there). */
+.page-head {
+  margin-bottom: var(--space-4);
+}
+.page-head .page-title {
+  margin-bottom: 0;
+}
+.page-head .page-sub {
+  margin: var(--space-1) 0 0;
+}
+.head-sentinel {
+  margin-top: 0;
+}
+/* Sub-screens (with a back button) get a slightly smaller large title so a
+   day name like "Legs A — Quad & hinge" stays on one line. */
+.page-head-top ~ .page-title {
+  font-size: 30px;
+  line-height: 36px;
+  letter-spacing: -0.026em;
+}
+.page-sub {
+  font-size: 15px;
+  line-height: 21px;
+}
+
+/* ---------------------------------------------------------------- grouped lists
+   One glass container, rows divided by inset hairlines — the iOS inset list. */
+.group {
+  position: relative;
+  border-radius: var(--radius-xl);
+  background-color: var(--surface-1);
+  background-image: var(--glass-shine);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+.group:empty {
+  display: none;
+}
+.group-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 60px;
+  padding: 12px var(--space-4);
+  text-align: left;
+  background: none;
+  color: var(--ink-primary);
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.group-row + .group-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--space-4);
+  right: 0;
+  height: 1px;
+  background: var(--border-default);
+  transform: scaleY(0.6);
+  transform-origin: top;
+}
+.group-row:active {
+  background-color: color-mix(in srgb, var(--ink-primary) 6%, transparent);
+}
+.group-row-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 80%, #fff), var(--accent));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.group-row-main {
+  flex: 1;
+  min-width: 0;
+}
+.group-row-title {
+  font-size: 16px;
+  line-height: 21px;
+  font-weight: 600;
+  letter-spacing: -0.016em;
+}
+.group-row-sub {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ink-secondary);
+  margin-top: 1px;
+}
+.group-row-meta {
+  font-size: 12.5px;
+  line-height: 17px;
+  color: var(--ink-tertiary);
+  margin-top: 1px;
+}
+.group-row-trail {
+  text-align: right;
+  flex-shrink: 0;
+}
+.group-row-value {
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.group-row-unit {
+  font-size: 11.5px;
+  color: var(--ink-tertiary);
+}
+.group-row-chev {
+  color: var(--ink-quaternary);
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------------- plan cards */
+.plan-card {
+  padding: 0;
+  overflow: hidden;
+}
+.plan-card + .plan-card,
+.card + .card {
+  margin-top: var(--space-3);
+}
+.plan-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-2);
+  text-align: left;
+  background: none;
+  color: var(--ink-primary);
+}
+.plan-card-title {
+  font-size: 18px;
+  line-height: 23px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.plan-card-meta {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  margin-top: 2px;
+}
+.plan-card .clamp {
+  padding: 0 var(--space-4);
+}
+.plan-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+  border-top: 1px solid var(--border-subtle);
+}
+.icon-btn-sm {
+  width: 36px;
+  height: 36px;
+}
+
+/* ---------------------------------------------------------------- clamped text */
+.clamp-text {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clamp-text[data-open] {
+  display: block;
+}
+.clamp-toggle {
+  margin-top: 2px;
+  padding: 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-ink);
+  background: none;
+}
+.page-head + .head-sentinel + .clamp,
+.clamp:has(.page-sub) {
+  margin-bottom: var(--space-4);
+}
+.clamp .page-sub {
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- hero */
+.hero-title {
+  font-size: 19px;
+  line-height: 24px;
+  font-weight: 680;
+}
+.hero-sub {
+  font-size: 14px;
+}
+.hero-cta {
+  min-height: 52px;
+  font-size: 16px;
+}
+.ring-caption,
+.stat-label,
+.tag,
+.sym-label {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.ring-caption {
+  font-size: 10.5px;
+}
+.stat-label {
+  font-size: 13px;
+  color: var(--ink-secondary);
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.tag {
+  font-size: 12px;
+}
+.sym-label {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--ink-secondary);
+}
+
+/* Block status: one quiet glass strip under the calendar */
+.block-line {
+  margin-top: var(--space-3);
+  padding: 8px 8px 8px var(--space-4);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-1);
+  border: 1px solid var(--card-border);
+  box-shadow: inset 0 1px 0 var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.block-line-text {
+  font-size: 13px;
+  line-height: 18px;
+}
+.block-line-text b {
+  color: var(--ink-primary);
+  font-weight: 650;
+}
+
+/* ---------------------------------------------------------------- knee check-in */
+.knee-q {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-primary);
+}
+.advice-headline {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 25px;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+}
+.pain-scale {
+  gap: 6px;
+}
+.pain-opt {
+  min-height: 44px;
+  border-radius: 13px;
+  background: rgba(120, 130, 150, 0.12);
+  font-size: 16px;
+  font-weight: 600;
+  transition:
+    transform var(--dur-base) var(--ease-spring),
+    background-color var(--dur-fast) var(--ease-standard);
+}
+:root[data-theme='dark'] .pain-opt {
+  background: rgba(255, 255, 255, 0.07);
+}
+.pain-opt:active {
+  transform: scale(0.92);
+}
+.pain-opt.on {
+  background: var(--accent);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 6px 16px -6px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+.pain-skip {
+  white-space: nowrap;
+  font-size: 13px;
+}
+.pain-anchors {
+  font-size: 12px;
+  color: var(--ink-tertiary);
+}
+
+/* ---------------------------------------------------------------- workout cards
+   Fewer boxes: the prescription reads as a caption, feedback as soft tints. */
+.ex-name {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.presc {
+  margin-top: 6px;
+  padding: 0;
+  background: none;
+  color: var(--ink-secondary);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+}
+.sym-strip,
+.advice {
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 18px;
+}
+.ex-actions {
+  margin-top: var(--space-3);
+  padding: 4px;
+  gap: 4px;
+  border-radius: var(--radius-full);
+  background: rgba(120, 130, 150, 0.1);
+  margin-left: 0;
+  margin-right: 0;
+}
+:root[data-theme='dark'] .ex-actions {
+  background: rgba(255, 255, 255, 0.06);
+}
+.ex-actions .btn {
+  min-height: 34px;
+  padding: 6px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+.ex-actions .btn.is-on {
+  background: var(--surface-3);
+  color: var(--accent-ink);
+  box-shadow: inset 0 1px 0 var(--glass-edge), 0 2px 8px -2px rgba(0, 0, 0, 0.15);
+}
+.set-num {
+  background: rgba(120, 130, 150, 0.14);
+}
+.setgrid-head {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.set-done.on::before {
+  box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+
+/* Plan editor exercise toolbar: smaller, quieter controls */
+.scheme-actions .icon-btn {
+  width: 36px;
+  height: 36px;
+}
+
+/* Inset sheet rows match grouped rows */
+.lrow {
+  border-bottom-color: var(--border-default);
+}
+
+/* ---------------------------------------------------------------- accessibility */
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
+}
+
+/* "Reduce transparency" (iOS) and forced high contrast: solid surfaces */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  :root,
+  :root[data-theme='light'] {
+    --surface-1: #ffffff;
+    --surface-2: #eef1f5;
+    --tabbar-bg: rgba(255, 255, 255, 0.97);
+  }
+  :root[data-theme='dark'] {
+    --surface-1: #16181f;
+    --surface-2: #20232b;
+    --tabbar-bg: rgba(22, 24, 31, 0.97);
+  }
+  body::before {
+    display: none;
+  }
+}
+
+/* Long titles break into even lines instead of leaving one orphaned word */
+.page-title,
+.hero-title,
+.plan-card-title,
+.sheet-title,
+.ex-name {
+  text-wrap: balance;
+}

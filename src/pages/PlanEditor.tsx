@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useStore, uid } from '../store/useStore'
 import { EXERCISE_BY_ID } from '../data/exercises'
 import { Icon } from '../components/Icon'
+import { ClampText } from '../components/ClampText'
 import { Sheet } from '../components/Sheet'
 import { ExercisePicker } from '../components/ExercisePicker'
 import { SwapSheet } from '../components/SwapSheet'
@@ -246,7 +247,9 @@ export function PlanEditor() {
           {plan.name} <Icon name="edit" size={16} className="faint" />
         </h1>
       </button>
-      {plan.description && <p className="page-sub">{plan.description}</p>}
+      {plan.description && (
+        <ClampText text={plan.description} className="page-sub" lines={3} />
+      )}
 
       {/* A saved plan is a snapshot, so template changes don't reach it on their
           own. Surface that here rather than only inside the details sheet. */}

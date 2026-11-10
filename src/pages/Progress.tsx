@@ -9,7 +9,7 @@ import {
   sessionVolume,
   exerciseHistory,
 } from '../lib/stats'
-import { fmtNum, fmtWeight, relativeDate, fmtDuration } from '../lib/format'
+import { fmtNum, fmtWeight, relativeDate, fmtDuration, splitSessionName } from '../lib/format'
 import { Icon } from '../components/Icon'
 import { Sheet } from '../components/Sheet'
 import { VolumeBar } from '../components/VolumeBar'
@@ -71,7 +71,7 @@ export function Progress() {
   if (sessions.length === 0) {
     return (
       <div className="app">
-        <PageHeader eyebrow="Analytics" title="Progress" />
+        <PageHeader title="Progress" />
         <EmptyState
           glyph="trend"
           title="No data yet"
@@ -88,9 +88,7 @@ export function Progress() {
   return (
     <div className="app">
       <PageHeader
-        eyebrow="Analytics"
         title="Progress"
-        sub="Your lifts, tracked over time."
         actions={
           <button
             className="icon-btn"
@@ -313,30 +311,26 @@ export function Progress() {
         <h2>History</h2>
         <span className="tag">{sessions.length} total</span>
       </div>
-      {sessions.map((s) => (
-        <button
-          key={s.id}
-          className="card card-tap"
-          style={{ width: '100%', textAlign: 'left', padding: '13px 16px' }}
-          onClick={() => setOpenSession(s.id)}
-        >
-          <div className="row-between">
-            <div className="grow">
-              <div style={{ fontWeight: 600 }} className="truncate">
-                {s.name}
+      <div className="group">
+        {sessions.map((s) => {
+          const n = splitSessionName(s.name)
+          return (
+            <button key={s.id} className="group-row" onClick={() => setOpenSession(s.id)}>
+              <div className="group-row-main">
+                <div className="group-row-title truncate">{n.title}</div>
+                <div className="group-row-meta">
+                  {relativeDate(s.date)} · {s.exercises.length} exercises ·{' '}
+                  {fmtDuration(s.durationSec)}
+                </div>
               </div>
-              <div className="faint" style={{ fontSize: 12 }}>
-                {relativeDate(s.date)} · {s.exercises.length} exercises ·{' '}
-                {fmtDuration(s.durationSec)}
+              <div className="group-row-trail">
+                <div className="group-row-value">{fmtNum(sessionVolume(s))}</div>
+                <div className="group-row-unit">{unit} vol</div>
               </div>
-            </div>
-            <div className="mono muted" style={{ fontSize: 13, textAlign: 'right' }}>
-              {fmtNum(sessionVolume(s))}
-              <div className="tag">{unit} vol</div>
-            </div>
-          </div>
-        </button>
-      ))}
+            </button>
+          )
+        })}
+      </div>
 
       <Sheet open={!!detail} onClose={() => setOpenSession(null)} title={detail?.name}>
         {detail && (
