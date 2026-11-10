@@ -87,7 +87,12 @@ export function Train() {
   return (
     <div className="app">
       <div className="eyebrow">{today}</div>
-      <h1 className="page-title">{settings.name ? `${greeting}, ${settings.name}` : greeting}</h1>
+      <div className="page-title-row">
+        <h1 className="page-title">{settings.name ? `${greeting}, ${settings.name}` : greeting}</h1>
+        <button className="icon-btn" onClick={() => nav('/settings')} aria-label="Settings">
+          <Icon name="settings" size={18} />
+        </button>
+      </div>
       <p className="page-sub">
         {stats.totalSessions === 0
           ? 'Log your first workout to start building your history.'

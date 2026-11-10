@@ -84,7 +84,7 @@ export function Settings() {
       <PageHeader
         title="Settings"
         sub="Everything is stored privately on this device."
-        onBack={() => nav('/library')}
+        onBack={() => (window.history.state?.idx > 0 ? nav(-1) : nav('/'))}
       />
 
       <div className="section-head">
