@@ -996,7 +996,7 @@ export const TEMPLATES: Plan[] = [
   // (0-30 degrees), Legs A (60) and Legs B (90).
   {
     id: 'tpl-ppl-knee-p1',
-    revision: 2,
+    revision: 3,
     name: 'Knee-Resilient PPL — Phase 1',
     description:
       'Push / Pull / Legs six days a week, with two lower-body days that blend quad and posterior work, built around knee pain relief and rehabilitating toward running again.\n\nLEG DAYS (Wed / Sat): each opens with a logged backward-incline-walk warm-up — go until the knee feels ready and log the minutes. Surgical side first on every per-leg lift, and the good side matches its reps. The first set of the main knee lifts is a warm-up set (W): about half your working weight, never counted as a working set. Legs A is the single-leg day (step-down, sled drag, single-leg RDL, single-leg calf raise); Legs B is mostly both legs, with the leg extension as its one single-leg lift. Calves are trained both ways, bent-knee and straight-knee, and calves, shins and hips are paired inside the blocks instead of left as finishers.\n\nISOMETRICS, THREE TIMES A WEEK on three different angles, since strength from a hold only carries about 20° either side of the angle you train: Push A at 0–30° (TKE hold) plus a long-length hamstring hold, Legs A at 60° (leg-extension hold), Legs B at 90° (Spanish squat).\n\nSETS: heavy compounds are a warm-up plus two working sets taken close to failure; lighter upper-body lifts are three, and Legs B runs two hard sets per exercise. Pairs marked with a superset letter alternate a set of each, so the rest is shared.\n\nTHE PAIN RULE: ≤3/10 during, back to baseline by the next morning. A yellow or red knee check-in holds back load advice on leg lifts, and Step back trims a set from each knee lift for the day. Swelling means drop back.\n\nMOVE TO PHASE 2 WHEN: 6+ weeks in, pain ≤3/10 and settled by morning, no swelling for two weeks, and 10 slow step-downs per leg at ≤2/10. PHASE 3 (hops, skipping, walk-jog): gates come from your Baseline Test Day results — reps, hold times and symmetry, each with pain ≤3/10 and no next-morning swelling — not from a load target.\n\nNot medical advice. Running volume is your surgeon’s call, not this program’s.',
@@ -1017,7 +1017,7 @@ export const TEMPLATES: Plan[] = [
         iso('machine-crunch', 3, [10, 15], { role: 'Abs (loaded flexion)' }),
       ]),
       day('Pull A', [
-        withWarmup(comp('barbell-row', 2, [6, 10], { rir: [2, 1], rest: 180, role: 'Horizontal pull' }), [8, 10]),
+        withWarmup(comp('chest-supported-row', 2, [6, 10], { rir: [2, 1], rest: 180, role: 'Horizontal pull — Smith row, chest on the top of the bench' }), [8, 10]),
         withWarmup(comp('lat-pulldown', 2, [8, 12], { rir: [2, 1], rest: 120, role: 'Lats' }), [10, 12]),
         withWarmup(comp('seated-cable-row', 2, [8, 12], { rir: [2, 1], rest: 120, role: 'Mid-back' }), [10, 12]),
         iso('reverse-pec-deck', 3, [12, 20], { role: 'Rear delts' }),
@@ -1055,11 +1055,11 @@ export const TEMPLATES: Plan[] = [
       ]),
       day('Pull B', [
         withWarmup(comp('neutral-pulldown', 2, [8, 12], { rir: [2, 1], rest: 120, role: 'Vertical pull' }), [10, 12]),
-        withWarmup(comp('meadows-row', 2, [8, 12], { rir: [2, 1], rest: 120, role: 'Mid-back (per side)' }), [10, 12]),
+        withWarmup(comp('single-arm-db-row', 2, [8, 12], { rir: [2, 1], rest: 120, role: 'Mid-back, per arm — bench at about 45°, full stretch at the bottom' }), [10, 12]),
         iso('straight-arm-pulldown', 2, [12, 20], { tempo: STRETCH_TEMPO, role: 'Lats (isolation)' }),
-        iso('cable-rear-delt-fly', 3, [12, 20], { role: 'Rear delts' }),
+        iso('face-pull', 3, [12, 20], { role: 'Rear delts, both arms at once — low cable' }),
         iso('bayesian-curl', 3, [10, 15], { tempo: STRETCH_TEMPO, role: 'Biceps long head' }),
-        iso('spider-curl', 2, [10, 15], { role: 'Biceps short head' }),
+        iso('cable-curl', 2, [10, 15], { role: 'Biceps — back against the cable stand, heaviest curl of the week' }),
         iso('wrist-roller', 2, [2, 5], { rest: 60, role: 'Forearms (both directions)' }),
       ]),
       // Two-leg day: one single-leg lift (leg extension, where the side-to-side
