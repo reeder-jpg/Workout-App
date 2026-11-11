@@ -12,6 +12,7 @@ import { WeekCalendar } from '../components/WeekCalendar'
 import { KneeCheckinCard } from '../components/KneeCheckinCard'
 import { toast } from '../lib/toast'
 import { blockState, DELOAD } from '../lib/mesocycle'
+import { waveFor, WAVE_LABEL, WAVE_SUMMARY } from '../lib/repWave'
 import { DEFAULTS } from '../data/landmarks'
 import type { Plan } from '../types'
 
@@ -83,6 +84,7 @@ export function Train() {
   // block, else the only plan you have.
   const activePlan = plans.find((p) => p.blockStartedAt) ?? (plans.length === 1 ? plans[0] : undefined)
   const block = activePlan ? blockState(activePlan) : null
+  const wave = waveFor(activePlan)
 
   return (
     <div className="app">
@@ -191,7 +193,13 @@ export function Train() {
                   : `deload in ${block.weeksToDeload} week${
                       block.weeksToDeload === 1 ? '' : 's'
                     }`}
-                , add ~{DEFAULTS.weeklySetRamp} set per muscle
+                {wave ? (
+                  <>
+                    {' '}· <b>{WAVE_LABEL[wave]}</b>: {WAVE_SUMMARY[wave]}
+                  </>
+                ) : (
+                  <>, add ~{DEFAULTS.weeklySetRamp} set per muscle</>
+                )}
               </>
             )}
           </div>

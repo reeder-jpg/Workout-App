@@ -143,6 +143,8 @@ export interface Plan {
   blockStartedAt?: number
   /** Block length in weeks, including the deload. Defaults to the spec value. */
   blockWeeks?: number
+  /** Rotate upper-body rep targets week to week (base / heavier / pump). See lib/repWave. */
+  repWaves?: boolean
 }
 
 /** One leg's half of a per-leg set. */
@@ -193,6 +195,8 @@ export interface Session {
   date: number
   /** Generated during a deload week: fewer sets, RIR held clear of failure. */
   deload?: boolean
+  /** The weekly rep wave the session was generated with, when the plan uses waves. */
+  wave?: 'base' | 'heavy' | 'pump'
   planId?: string
   dayId?: string
   name: string

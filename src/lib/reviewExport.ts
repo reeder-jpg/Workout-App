@@ -53,6 +53,7 @@ function setStr(st: {
 interface Exposure {
   date: number
   deload?: boolean
+  wave?: 'base' | 'heavy' | 'pump'
   sets: LoggedSet[]
   /** The note typed on this exercise in that session, if any. */
   note?: string
@@ -81,7 +82,7 @@ function exposuresOf(sessions: Session[], exerciseId: string): Exposure[] {
       }
       bestE1rm = Math.max(bestE1rm, e1rm(st.weight, st.reps))
     }
-    out.push({ date: s.date, deload: s.deload, sets, best, bestE1rm, note: ex.note?.trim() || undefined })
+    out.push({ date: s.date, deload: s.deload, wave: s.wave, sets, best, bestE1rm, note: ex.note?.trim() || undefined })
   }
   return out.sort((a, b) => a.date - b.date)
 }
@@ -362,7 +363,7 @@ export function buildReviewReport(opts: ReviewOptions): string {
 
     // The last three sessions in full — the detail progression decisions need.
     for (const e of exp.slice(-3)) {
-      out.push(`  ${ymd(e.date)}: ${e.sets.map(setStr).join(', ')}${e.deload ? '  [deload]' : ''}`)
+      out.push(`  ${ymd(e.date)}: ${e.sets.map(setStr).join(', ')}${e.deload ? '  [deload]' : e.wave && e.wave !== 'base' ? `  [${e.wave === 'heavy' ? 'heavier' : 'pump'} week]` : ''}`)
       if (e.note) out.push(`    session note: ${oneLine(e.note)}`)
     }
     const standing = notes[id]?.trim()

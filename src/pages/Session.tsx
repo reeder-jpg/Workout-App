@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore'
 import { EXERCISE_BY_ID } from '../data/exercises'
 import { Icon } from '../components/Icon'
+import { WAVE_LABEL, WAVE_SUMMARY } from '../lib/repWave'
 import { splitSessionName } from '../lib/format'
 import { ExercisePicker } from '../components/ExercisePicker'
 import { RestTimer } from '../components/RestTimer'
@@ -195,6 +196,15 @@ export function Session() {
           <div className="block-week">Deload session</div>
           <div className="block-sub">
             Sets are already cut and RIR raised. {DELOAD.summary}
+          </div>
+        </div>
+      )}
+
+      {active.wave && active.wave !== 'base' && (
+        <div className="block-strip" style={{ marginTop: 0 }}>
+          <div className="block-week">{WAVE_LABEL[active.wave]}</div>
+          <div className="block-sub">
+            Rep targets already adjusted: {WAVE_SUMMARY[active.wave]}. Leg work is unchanged.
           </div>
         </div>
       )}

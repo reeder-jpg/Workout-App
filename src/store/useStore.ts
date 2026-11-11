@@ -14,6 +14,7 @@ import type {
 import { EXERCISES } from '../data/exercises'
 import { TEMPLATES, sourceTemplateFor } from '../data/templates'
 import { blockStartForWeek, blockState, deloadScheme } from '../lib/mesocycle'
+import { applyWave, waveFor } from '../lib/repWave'
 import { KNEE_MUSCLES, dayKey, stepBackScheme } from '../lib/knee'
 
 export function uid(prefix = 'id'): string {
@@ -175,6 +176,7 @@ export const useStore = create<State>()(
                   description: t.description,
                   daysPerWeek: t.daysPerWeek,
                   days: fresh.days,
+                  repWaves: t.repWaves,
                   sourceTemplateId: t.id,
                   sourceTemplateRevision: t.revision,
                 }
@@ -223,6 +225,8 @@ export const useStore = create<State>()(
           }))
         }
         const deloading = !!plan && blockState(plan)?.isDeload === true
+        // Weekly rep waves shift upper-body targets; never in the deload week.
+        const wave = deloading ? null : waveFor(plan)
         // Step-back is a per-day switch from the knee check-in. It touches only
         // exercises that load the knee, so upper work on the same day is untouched.
         const steppingBack = get().stepBackDay === dayKey()
@@ -232,6 +236,7 @@ export const useStore = create<State>()(
           id: uid('sess'),
           date: Date.now(),
           deload: deloading || undefined,
+          wave: wave ?? undefined,
           planId: plan?.id,
           dayId: day?.id,
           name: day ? `${plan?.name ?? ''} · ${day.name}`.trim() : 'Workout',
@@ -249,8 +254,8 @@ export const useStore = create<State>()(
                   }))
             // In the deload week the session is generated lighter rather than
             // relying on the lifter to remember to hold back.
-            const base = deloading ? deloadScheme(prescribed) : prescribed
             const m = meta(pe.exerciseId)
+            const base = deloading ? deloadScheme(prescribed) : applyWave(prescribed, m, wave)
             const knee = !!m && KNEE_MUSCLES.has(m.primary)
             const scheme = steppingBack && knee ? stepBackScheme(base) : base
             if (scheme !== base) steppedBack = true
