@@ -31,12 +31,13 @@ export function Progress() {
   const unit = useStore((s) => s.settings.unit)
   const deleteSession = useStore((s) => s.deleteSession)
   const kneeCheckins = useStore((s) => s.kneeCheckins)
+  const exerciseNotes = useStore((s) => s.exerciseNotes)
   // Tapping a workout in Train's Recent list lands here with that session to
   // open, so the breakdown is one tap away instead of a hunt through History.
   const loc = useLocation()
   /** One tap from the page that shows the data, not buried in Settings. */
   function copyReport() {
-    const report = buildReviewReport({ sessions, customExercises: custom, unit, kneeCheckins })
+    const report = buildReviewReport({ sessions, customExercises: custom, unit, kneeCheckins, exerciseNotes })
     if (isEmptyReport(report)) {
       toast('No completed sets logged yet', 'danger')
       return

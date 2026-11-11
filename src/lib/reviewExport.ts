@@ -54,6 +54,8 @@ interface Exposure {
   date: number
   deload?: boolean
   sets: LoggedSet[]
+  /** The note typed on this exercise in that session, if any. */
+  note?: string
   /** Heaviest set, breaking ties on reps — so bodyweight work ranks by reps. */
   best: { weight: number; reps: number }
   bestE1rm: number
@@ -79,7 +81,7 @@ function exposuresOf(sessions: Session[], exerciseId: string): Exposure[] {
       }
       bestE1rm = Math.max(bestE1rm, e1rm(st.weight, st.reps))
     }
-    out.push({ date: s.date, deload: s.deload, sets, best, bestE1rm })
+    out.push({ date: s.date, deload: s.deload, sets, best, bestE1rm, note: ex.note?.trim() || undefined })
   }
   return out.sort((a, b) => a.date - b.date)
 }
@@ -90,6 +92,12 @@ export interface ReviewOptions {
   unit: Unit
   /** Morning knee check-ins, reported alongside the session knee-pain scores. */
   kneeCheckins?: KneeCheckin[]
+  /**
+   * Standing per-exercise notes (setup, cues, how it went). They carry the
+   * context the numbers can't — a seat setting, a swap, "did these for reps" —
+   * so a reviewer doesn't misread the sets.
+   */
+  exerciseNotes?: Record<string, string>
   /** How far back to report in detail. */
   days?: number
   now?: number
@@ -147,7 +155,7 @@ export function isEmptyReport(report: string): boolean {
 }
 
 export function buildReviewReport(opts: ReviewOptions): string {
-  const { sessions, customExercises, unit, kneeCheckins = [], days = 90, now = Date.now() } = opts
+  const { sessions, customExercises, unit, kneeCheckins = [], exerciseNotes: notes = {}, days = 90, now = Date.now() } = opts
   const nameOf = (id: string) =>
     EXERCISE_BY_ID[id]?.name ?? customExercises.find((e) => e.id === id)?.name ?? id
   const metaOf = (id: string) =>
@@ -278,7 +286,7 @@ export function buildReviewReport(opts: ReviewOptions): string {
 
   out.push('')
   out.push(`## EXERCISES (${ids.length} trained in the last ${days} days)`)
-  out.push('Per lift: sessions · first → latest top set · best e1RM · trend · engine verdict')
+  out.push('Per lift: sessions · first → latest top set · best e1RM · trend · engine verdict · your notes')
 
   const flagged: string[] = []
   const rows = ids
@@ -355,13 +363,27 @@ export function buildReviewReport(opts: ReviewOptions): string {
     // The last three sessions in full — the detail progression decisions need.
     for (const e of exp.slice(-3)) {
       out.push(`  ${ymd(e.date)}: ${e.sets.map(setStr).join(', ')}${e.deload ? '  [deload]' : ''}`)
+      if (e.note) out.push(`    session note: ${oneLine(e.note)}`)
     }
+    const standing = notes[id]?.trim()
+    if (standing) out.push(`  your note: ${oneLine(standing)}`)
     // The headline is useful even when the verdict is 'unknown' (which just
     // means the sets carried no prescribed target to judge against).
     if (advice.headline) {
       const label = advice.verdict === 'unknown' ? 'note' : advice.verdict
       out.push(`  engine: ${label} — ${advice.headline}`)
     }
+  }
+
+  // Notes on exercises not trained in the window still explain the history
+  // (why a lift was dropped, a setup that didn't work), so they're listed too.
+  const untrained = Object.entries(notes)
+    .filter(([id, n]) => n.trim() && !rows.some((r) => r.id === id))
+    .sort(([a], [b]) => nameOf(a).localeCompare(nameOf(b)))
+  if (untrained.length > 0) {
+    out.push('')
+    out.push(`## OTHER EXERCISE NOTES (not trained in the last ${days} days)`)
+    for (const [id, n] of untrained) out.push(`  ${nameOf(id)}: ${oneLine(n)}`)
   }
 
   if (flagged.length > 0) {
@@ -374,6 +396,11 @@ export function buildReviewReport(opts: ReviewOptions): string {
   out.push('')
   out.push('(Sets read weight×reps@RIR. BW = bodyweight. e1RM is an estimate, not a tested max.)')
   return out.join('\n')
+}
+
+/** Notes can hold line breaks; the report keeps each on one line. */
+function oneLine(text: string): string {
+  return text.replace(/\s*\n+\s*/g, ' / ').trim()
 }
 
 /** The day's name without the plan prefix: "Knee A" from "Plan · Knee A — Quad angles". */

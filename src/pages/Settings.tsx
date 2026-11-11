@@ -21,13 +21,14 @@ export function Settings() {
 
   const customExercises = useStore((s) => s.customExercises)
   const kneeCheckins = useStore((s) => s.kneeCheckins)
+  const exerciseNotes = useStore((s) => s.exerciseNotes)
 
   const fileRef = useRef<HTMLInputElement>(null)
   const [confirmReset, setConfirmReset] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
 
   const buildReport = () =>
-    buildReviewReport({ sessions, customExercises, unit: settings.unit, kneeCheckins })
+    buildReviewReport({ sessions, customExercises, unit: settings.unit, kneeCheckins, exerciseNotes })
 
   function copyReport() {
     const report = buildReport()
