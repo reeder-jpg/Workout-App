@@ -102,7 +102,7 @@ export interface ReviewOptions {
  * to 50 reps. Applying the swap heuristic there produced more false alarms than
  * findings and taught the reader to skim past the whole section.
  */
-const LOADED: ReadonlySet<string> = new Set(['Barbell', 'Dumbbell', 'Machine', 'Cable', 'Smith'])
+const LOADED: ReadonlySet<string> = new Set(['Barbell', 'Dumbbell', 'Kettlebell', 'Machine', 'Cable', 'Smith'])
 
 /**
  * Entries that are almost certainly mis-typed rather than remarkable.

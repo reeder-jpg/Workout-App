@@ -1090,6 +1090,88 @@ export const TEMPLATES: Plan[] = [
       ]),
     ],
   },
+  // ------------------------------------------------ Pilates Sculpt (mat)
+  // Four mat sessions of about 45 minutes, built like a Pilates class: the
+  // Hundred to warm up, a core series, a main block, back extension and side
+  // work, then a stretch. Two days add dumbbells and kettlebells, because the
+  // evidence for mat Pilates is strongest for flexibility, balance and core
+  // endurance and weakest for strength. No machines. Logged as one row per set:
+  // moves done on each side are counted per side in the reps box.
+  {
+    id: 'tpl-pilates-sculpt',
+    revision: 1,
+    name: 'Pilates Sculpt — 4 Day (Mat)',
+    description:
+      'Four mat Pilates sessions a week, about 45 minutes each, with core work every day. Two are classical mat (Core & Glutes, and a Full Flow), and two add dumbbells and kettlebells (Lower Body Sculpt, Upper Body & Posture). No machines.\n\nTHE CLASS SHAPE: every session opens with the Hundred (breathe in for 5 pumps, out for 5), moves through a core series and a main block, and ends with back extension, side work and a stretch. Pairs and groups with the same letter run straight through like a class, one after another, with the rest at the end of the round.\n\nHOW TO MOVE: slow and controlled, exhale on the effort. Quality beats reps. If the neck strains in curled-up moves, rest the head down. If the low back lifts off the mat, bend the knees or raise the legs higher.\n\nPER SIDE: moves done on one side at a time (circles, side-lying leg series, curtsy lunge, side plank, rows) log the reps or seconds for one side; do the same on the other.\n\nPROGRESSION, in this order: (1) more reps or seconds within the range; (2) a harder version of the same move — roll-up with bent knees → full roll-up, teaser prep (feet down) → one leg → full teaser, knee push-ups → full; (3) a heavier dumbbell or kettlebell, one step at a time.\n\nWHAT TO EXPECT: research on mat Pilates in healthy adults shows the clearest gains in flexibility, balance and core endurance; the dumbbell and kettlebell work is there for strength. Not medical advice.',
+    daysPerWeek: 4,
+    createdAt: 0,
+    builtIn: true,
+    days: [
+      day('Core & Glutes', [
+        iso('pilates-hundred', 1, [100, 100], { rir: [2, 2], rest: 30, role: 'Warm-up — breathe in 5 pumps, out 5' }),
+        iso('pilates-roll-up', 2, [6, 10], { rir: [2, 1], rest: 30, role: 'Bend the knees until it is smooth' }),
+        iso('pilates-single-leg-circles', 2, [5, 8], { rir: [3, 3], rest: 15, role: 'Each direction — one set per leg' }),
+        iso('pilates-rolling-like-a-ball', 1, [8, 10], { rir: [3, 3], rest: 30, role: 'Control and balance' }),
+        // The stomach series, straight through.
+        ss('A', iso('pilates-single-leg-stretch', 2, [10, 16], { rir: [2, 1], rest: 0, role: 'Stomach series' })),
+        ss('A', iso('pilates-double-leg-stretch', 2, [8, 12], { rir: [2, 1], rest: 0, role: 'Stomach series' })),
+        ss('A', iso('pilates-criss-cross', 2, [10, 16], { rir: [2, 1], rest: 45, role: 'Stomach series' })),
+        ss('B', iso('pilates-bridge', 3, [12, 15], { rir: [2, 1], rest: 15, role: 'Dumbbell or kettlebell on the hips' })),
+        ss('B', iso('pilates-side-leg-series', 3, [10, 15], { rir: [2, 1], rest: 45, role: 'Per side' })),
+        hold('pilates-swimming', 2, [20, 40], { rest: 30, role: 'Back extension' }),
+        ss('C', iso('pilates-spine-stretch', 1, [5, 6], { rir: [4, 4], rest: 0, role: 'Stretch' })),
+        ss('C', iso('pilates-saw', 1, [6, 8], { rir: [4, 4], rest: 0, role: 'Stretch' })),
+      ]),
+      day('Lower Body Sculpt', [
+        iso('pilates-hundred', 1, [100, 100], { rir: [2, 2], rest: 30, role: 'Warm-up — breathe in 5 pumps, out 5' }),
+        iso('kb-goblet-squat', 3, [10, 15], { tempo: '3-1-1-0', rir: [3, 1], rest: 60, role: 'Slow down, pulse at the bottom on the last set' }),
+        ss('A', iso('kb-deadlift', 3, [8, 12], { rir: [3, 1], rest: 15, role: 'Hinge — learn this before the swing' })),
+        ss('A', iso('dead-bug', 3, [8, 12], { rir: [2, 1], rest: 60, role: 'Core' })),
+        ss('B', iso('curtsy-lunge', 2, [8, 12], { rir: [2, 1], rest: 15, role: 'Per leg' })),
+        ss('B', hold('side-plank', 2, [20, 40], { rest: 45, role: 'Per side' })),
+        ss('C', iso('kb-swing', 3, [12, 20], { rir: [2, 1], rest: 15, role: 'Power from the hips' })),
+        ss('C', iso('pilates-teaser', 3, [4, 8], { rir: [2, 1], rest: 60, role: 'Start with the prep: feet down' })),
+        iso('pilates-side-leg-series', 2, [12, 15], { rir: [1, 0], rest: 15, role: 'Per side — band above the knees to progress' }),
+        iso('pilates-mermaid', 1, [4, 6], { rir: [4, 4], rest: 0, role: 'Stretch, per side' }),
+      ]),
+      day('Upper Body & Posture', [
+        iso('pilates-hundred', 1, [100, 100], { rir: [2, 2], rest: 30, role: 'Warm-up — breathe in 5 pumps, out 5' }),
+        ss('A', iso('pilates-push-up', 3, [5, 10], { rir: [2, 1], rest: 15, role: 'Knees down until full reps are clean' })),
+        ss('A', hold('pilates-swimming', 3, [20, 40], { rest: 45, role: 'Back extension' })),
+        ss('B', iso('single-arm-db-row', 3, [10, 12], { rir: [2, 1], rest: 15, role: 'Per arm' })),
+        ss('B', iso('pilates-leg-pull-front', 3, [6, 10], { rir: [2, 1], rest: 45, role: 'Core — forearms to make it easier' })),
+        // The arm series, light dumbbells, straight through like a class.
+        ss('C', iso('lateral-raise', 2, [12, 15], { rir: [2, 1], rest: 0, role: 'Arm series — light dumbbells' })),
+        ss('C', iso('hammer-curl', 2, [12, 15], { rir: [2, 1], rest: 0, role: 'Arm series' })),
+        ss('C', iso('db-rear-delt-fly', 2, [12, 15], { rir: [2, 1], rest: 0, role: 'Arm series' })),
+        ss('C', iso('overhead-db-ext', 2, [12, 15], { rir: [2, 1], rest: 60, role: 'Arm series' })),
+        iso('kb-halo', 2, [6, 10], { rir: [3, 2], rest: 30, role: 'Each direction' }),
+        ss('D', iso('pilates-swan', 2, [5, 8], { rir: [2, 1], rest: 15, role: 'Back extension' })),
+        ss('D', iso('pilates-criss-cross', 2, [12, 16], { rir: [1, 0], rest: 30, role: 'Core' })),
+        iso('pilates-mermaid', 1, [4, 6], { rir: [4, 4], rest: 0, role: 'Stretch, per side' }),
+      ]),
+      day('Full Mat Flow', [
+        // Roughly the classical beginner order, flowing with short rests.
+        iso('pilates-hundred', 1, [100, 100], { rir: [2, 2], rest: 15, role: 'Warm-up — breathe in 5 pumps, out 5' }),
+        iso('pilates-roll-up', 2, [6, 10], { rir: [2, 1], rest: 15 }),
+        iso('pilates-single-leg-circles', 2, [5, 8], { rir: [3, 3], rest: 15, role: 'Each direction — one set per leg' }),
+        iso('pilates-rolling-like-a-ball', 1, [8, 10], { rir: [3, 3], rest: 15 }),
+        ss('A', iso('pilates-single-leg-stretch', 1, [10, 16], { rir: [1, 1], rest: 0, role: 'Stomach series' })),
+        ss('A', iso('pilates-double-leg-stretch', 1, [8, 12], { rir: [1, 1], rest: 0, role: 'Stomach series' })),
+        ss('A', iso('pilates-criss-cross', 1, [10, 16], { rir: [1, 1], rest: 15, role: 'Stomach series' })),
+        iso('pilates-spine-stretch', 1, [5, 6], { rir: [4, 4], rest: 15, role: 'Stretch' }),
+        iso('pilates-saw', 1, [6, 8], { rir: [4, 4], rest: 15, role: 'Stretch' }),
+        iso('pilates-swan', 2, [5, 8], { rir: [2, 1], rest: 15 }),
+        iso('pilates-side-leg-series', 2, [10, 15], { rir: [2, 1], rest: 15, role: 'Per side' }),
+        iso('pilates-teaser', 2, [4, 8], { rir: [2, 1], rest: 15, role: 'Prep, one leg or full' }),
+        hold('pilates-swimming', 2, [20, 40], { rest: 15 }),
+        iso('pilates-leg-pull-front', 2, [6, 10], { rir: [2, 1], rest: 15 }),
+        hold('side-plank', 2, [20, 40], { rest: 15, role: 'Per side' }),
+        iso('pilates-bridge', 2, [10, 15], { rir: [2, 1], rest: 15 }),
+        iso('pilates-mermaid', 1, [4, 6], { rir: [4, 4], rest: 0, role: 'Stretch, per side' }),
+      ]),
+    ],
+  },
   // ------------------------------------------------ Baseline Test Day
   // A one-off assessment, repeated every 4-6 weeks, that decides where each
   // movement starts in the late-stage program. Symmetry alone can mislead —

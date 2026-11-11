@@ -45,6 +45,9 @@ export function loadStep(equipment: Equipment, unit: 'lb' | 'kg'): number {
       return lb ? 5 : 2.5
     case 'Dumbbell':
       return lb ? 5 : 2
+    case 'Kettlebell':
+      // Kettlebells step about 5 lb (or 4 kg) between bells.
+      return lb ? 5 : 4
     case 'Machine':
     case 'Cable':
       return lb ? 2.5 : 1.25

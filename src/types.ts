@@ -16,6 +16,7 @@ export type MuscleGroup =
 export type Equipment =
   | 'Barbell'
   | 'Dumbbell'
+  | 'Kettlebell'
   | 'Machine'
   | 'Cable'
   | 'Smith'
