@@ -38,6 +38,7 @@ function useElapsed(startedAt?: number) {
 export function Session() {
   const nav = useNavigate()
   const active = useStore((s) => s.activeSession)
+  const undoDeload = useStore((s) => s.undoDeload)
   const kneeCheckins = useStore((s) => s.kneeCheckins)
   const sessions = useStore((s) => s.sessions)
   const unit = useStore((s) => s.settings.unit)
@@ -197,6 +198,17 @@ export function Session() {
           <div className="block-sub">
             Sets are already cut and RIR raised. {DELOAD.summary}
           </div>
+          {!active.exercises.some((e) => e.sets.some((st) => st.done)) && (
+            <button
+              className="btn btn-sm"
+              style={{ marginTop: 'var(--space-2)' }}
+              onClick={() => {
+                if (undoDeload()) toast('Full session loaded')
+              }}
+            >
+              Do the full session instead
+            </button>
+          )}
         </div>
       )}
 

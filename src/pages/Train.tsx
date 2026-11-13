@@ -211,10 +211,10 @@ export function Train() {
               className="btn btn-sm"
               onClick={() => {
                 startBlock(activePlan.id)
-                toast('New block started', 'success')
+                toast('Deload skipped — week 1 of a new block', 'success')
               }}
             >
-              New block
+              Skip deload
             </button>
           )}
         </div>

@@ -83,7 +83,12 @@ interface State {
   setBlockWeek: (planId: string, week: number) => void
 
   // active workout
-  startSession: (plan?: Plan, day?: PlanDay) => void
+  startSession: (plan?: Plan, day?: PlanDay, opts?: { skipDeload?: boolean }) => void
+  /**
+   * Regenerate the active deload session as a full one. Only before any set is
+   * ticked, so nothing logged is thrown away.
+   */
+  undoDeload: () => boolean
   startEmptySession: () => void
   addExerciseToActive: (exerciseId: string) => void
   removeExerciseFromActive: (index: number) => void
@@ -214,7 +219,7 @@ export const useStore = create<State>()(
           ),
         })),
 
-      startSession: (plan, day) => {
+      startSession: (plan, day, opts = {}) => {
         // First session from a plan starts its block, so week tracking needs no
         // separate setup step.
         if (plan && !plan.blockStartedAt) {
@@ -224,7 +229,7 @@ export const useStore = create<State>()(
             ),
           }))
         }
-        const deloading = !!plan && blockState(plan)?.isDeload === true
+        const deloading = !opts.skipDeload && !!plan && blockState(plan)?.isDeload === true
         // Weekly rep waves shift upper-body targets; never in the deload week.
         const wave = deloading ? null : waveFor(plan)
         // Step-back is a per-day switch from the knee check-in. It touches only
@@ -288,6 +293,15 @@ export const useStore = create<State>()(
         }
         if (steppedBack) session.stepBack = true
         set({ activeSession: session })
+      },
+      undoDeload: () => {
+        const a = get().activeSession
+        if (!a?.deload || a.exercises.some((e) => e.sets.some((st) => st.done))) return false
+        const plan = get().plans.find((p) => p.id === a.planId)
+        const day = plan?.days.find((d) => d.id === a.dayId)
+        if (!plan || !day) return false
+        get().startSession(plan, day, { skipDeload: true })
+        return true
       },
       startEmptySession: () => {
         set({

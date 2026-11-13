@@ -11,7 +11,10 @@ export interface BlockState {
   isDeload: boolean
   /** Weeks left before the deload starts. 0 while deloading. */
   weeksToDeload: number
-  /** True once the block has run past its last week. */
+  /**
+   * Always false now: blocks roll straight into the next one after the deload.
+   * Kept so older callers still type-check.
+   */
   isOverdue: boolean
   startedAt: number
 }
@@ -26,8 +29,11 @@ export function blockState(plan: Plan, now = Date.now()): BlockState | null {
   const totalWeeks = plan.blockWeeks ?? DEFAULTS.mesocycleWeeks
   const elapsed = Math.max(0, now - plan.blockStartedAt)
   const rawWeek = Math.floor(elapsed / WEEK_MS) + 1
-  const isOverdue = rawWeek > totalWeeks
-  const week = Math.min(rawWeek, totalWeeks)
+  // Blocks repeat: after the deload week the next block starts on its own.
+  // Clamping to the last week instead left every session after the block
+  // stuck as a deload until someone noticed and tapped "New block".
+  const week = ((rawWeek - 1) % totalWeeks) + 1
+  const isOverdue = false
   return {
     week,
     totalWeeks,
