@@ -903,3 +903,10 @@ select:focus {
 .ex-name {
   text-wrap: balance;
 }
+
+/* Which plan the block line is about, when more than one is saved */
+.block-line-plan {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+}

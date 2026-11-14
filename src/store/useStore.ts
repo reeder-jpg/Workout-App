@@ -120,7 +120,21 @@ interface State {
 
 export const useStore = create<State>()(
   persist(
-    (set, get) => ({
+    (set, get) => {
+      /**
+       * A workout already open from this plan was generated for the old week
+       * (deload, rep wave). If nothing has been ticked yet, rebuild it so the
+       * week change shows up straight away instead of on the next session.
+       */
+      const regenerateOpenSession = (planId: string) => {
+        const a = get().activeSession
+        if (!a || a.planId !== planId) return
+        if (a.exercises.some((e) => e.sets.some((st) => st.done))) return
+        const plan = get().plans.find((p) => p.id === planId)
+        const day = plan?.days.find((d) => d.id === a.dayId)
+        if (plan && day) get().startSession(plan, day)
+      }
+      return {
       plans: [],
       sessions: [],
       customExercises: [],
@@ -203,21 +217,25 @@ export const useStore = create<State>()(
         return plan
       },
 
-      startBlock: (planId, weeks) =>
+      startBlock: (planId, weeks) => {
         set((s) => ({
           plans: s.plans.map((p) =>
             p.id === planId
               ? { ...p, blockStartedAt: Date.now(), blockWeeks: weeks ?? p.blockWeeks }
               : p,
           ),
-        })),
+        }))
+        regenerateOpenSession(planId)
+      },
 
-      setBlockWeek: (planId, week) =>
+      setBlockWeek: (planId, week) => {
         set((s) => ({
           plans: s.plans.map((p) =>
             p.id === planId ? { ...p, blockStartedAt: blockStartForWeek(week) } : p,
           ),
-        })),
+        }))
+        regenerateOpenSession(planId)
+      },
 
       startSession: (plan, day, opts = {}) => {
         // First session from a plan starts its block, so week tracking needs no
@@ -565,7 +583,8 @@ export const useStore = create<State>()(
           kneeCheckins: [],
           stepBackDay: null,
         }),
-    }),
+      }
+    },
     // Do not rename this key. It is where every plan, workout and note lives;
     // changing it makes existing installs look like a fresh, empty app.
     { name: 'iron-log-v1' },

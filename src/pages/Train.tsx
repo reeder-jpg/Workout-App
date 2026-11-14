@@ -82,7 +82,18 @@ export function Train() {
 
   // Block status follows the plan you're actually running: the one with a live
   // block, else the only plan you have.
-  const activePlan = plans.find((p) => p.blockStartedAt) ?? (plans.length === 1 ? plans[0] : undefined)
+  // The plan you're actually running: the open workout's, else the one you
+  // trained most recently, else the most recently started block. "First plan
+  // with a block" picked an old plan whenever several were saved, so week
+  // changes landed on the wrong plan.
+  const lastPlanId =
+    active?.planId ??
+    [...sessions].sort((a, b) => b.date - a.date).find((s) => plans.some((p) => p.id === s.planId))
+      ?.planId
+  const activePlan =
+    plans.find((p) => p.id === lastPlanId) ??
+    [...plans].filter((p) => p.blockStartedAt).sort((a, b) => (b.blockStartedAt ?? 0) - (a.blockStartedAt ?? 0))[0] ??
+    (plans.length === 1 ? plans[0] : undefined)
   const block = activePlan ? blockState(activePlan) : null
   const wave = waveFor(activePlan)
 
@@ -174,6 +185,7 @@ export function Train() {
       {block && activePlan && (
         <div className={`block-line${block.isDeload ? ' is-deload' : ''}`}>
           <div className="block-line-text">
+            {plans.length > 1 && <div className="block-line-plan">{activePlan.name}</div>}
             {block.isDeload ? (
               <>
                 <b>Deload week</b> · {DELOAD.summary}
@@ -366,7 +378,7 @@ export function Train() {
       <Sheet
         open={!!editWeekFor}
         onClose={() => setEditWeekFor(null)}
-        title="Which week are you on?"
+        title={editWeekFor ? `Which week of ${editWeekFor.name}?` : 'Which week are you on?'}
       >
         <p className="hint" style={{ marginTop: 0 }}>
           The week advances by the calendar, not by sessions completed — so a light week or a
